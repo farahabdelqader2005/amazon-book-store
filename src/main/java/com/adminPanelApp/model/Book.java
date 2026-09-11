@@ -25,10 +25,7 @@ public class Book {
     @OneToOne(mappedBy = "book", cascade = CascadeType.ALL)
     private BookDetails bookDetails;
 
-    @ManyToMany(cascade = {
-            CascadeType.PERSIST,
-            CascadeType.MERGE
-    })
+    @ManyToMany
     @JoinTable(
             name = "book_author",
             joinColumns = @JoinColumn(name = "book_id"),

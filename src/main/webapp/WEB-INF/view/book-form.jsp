@@ -1,61 +1,224 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Add Book</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+
+    <title>
+        ${empty book.id ? 'Add Book' : 'Edit Book'}
+    </title>
+
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
+
 <body class="container mt-4">
 
-<h2 class="mb-4">Add New Book</h2>
+<c:url var="saveUrl" value="/books/save"/>
+<c:url var="listUrl" value="/books/list"/>
 
-<form action="${pageContext.request.contextPath}/books/save" method="post">
+<h2 class="mb-4">
+    ${empty book.id ? 'Add New Book' : 'Edit Book'}
+</h2>
+
+<form action="${saveUrl}" method="post">
+
+    <input type="hidden"
+           name="id"
+           value="${book.id}">
 
     <div class="form-group">
-        <label>Book Title:</label>
-        <input type="text" name="title" class="form-control" required />
+
+        <label>
+            Book Title
+        </label>
+
+        <input type="text"
+               name="title"
+               value="<c:out value='${book.title}'/>"
+               class="form-control"
+               maxlength="255"
+               required>
+
     </div>
 
     <div class="form-group">
-        <label>Price:</label>
-        <input type="number" step="0.01" name="price" class="form-control" required />
-    </div>
 
-    <div class="form-group">
-        <label>Category:</label>
-        <select name="categoryId" class="form-control" required>
-            <option value="">Select Category</option>
-            <c:forEach var="cat" items="${categories}">
-                <option value="${cat.id}">${cat.name}</option>
+        <label>
+            Categories
+        </label>
+
+        <div class="border rounded p-3">
+
+            <c:forEach var="category"
+                       items="${categories}">
+
+                <c:set var="categorySelected"
+                       value="false"/>
+
+                <c:forEach var="selectedCategory"
+                           items="${book.categories}">
+
+                    <c:if test="${selectedCategory.id == category.id}">
+
+                        <c:set var="categorySelected"
+                               value="true"/>
+
+                    </c:if>
+
+                </c:forEach>
+
+                <div class="form-check">
+
+                    <input type="checkbox"
+                           name="categoryIds"
+                           value="${category.id}"
+                           class="form-check-input"
+                           id="category-${category.id}"
+                           <c:if test="${categorySelected}">checked</c:if>>
+
+                    <label class="form-check-label"
+                           for="category-${category.id}">
+
+                        <c:out value="${category.name}"/>
+
+                    </label>
+
+                </div>
+
             </c:forEach>
-        </select>
-    </div>
 
-    <h4 class="mt-4">Book Details (ISBN & Publication)</h4>
+        </div>
 
-    <div class="form-group">
-        <label>ISBN:</label>
-        <input type="text" name="isbn" class="form-control" required />
     </div>
 
     <div class="form-group">
-        <label>Publisher:</label>
-        <input type="text" name="publisher" class="form-control" />
+
+        <label>
+            Authors
+        </label>
+
+        <div class="border rounded p-3">
+
+            <c:forEach var="author"
+                       items="${authors}">
+
+                <c:set var="authorSelected"
+                       value="false"/>
+
+                <c:forEach var="selectedAuthor"
+                           items="${book.authors}">
+
+                    <c:if test="${selectedAuthor.id == author.id}">
+
+                        <c:set var="authorSelected"
+                               value="true"/>
+
+                    </c:if>
+
+                </c:forEach>
+
+                <div class="form-check">
+
+                    <input type="checkbox"
+                           name="authorIds"
+                           value="${author.id}"
+                           class="form-check-input"
+                           id="author-${author.id}"
+                           <c:if test="${authorSelected}">checked</c:if>>
+
+                    <label class="form-check-label"
+                           for="author-${author.id}">
+
+                        <c:out value="${author.name}"/>
+
+                    </label>
+
+                </div>
+
+            </c:forEach>
+
+        </div>
+
+    </div>
+
+    <hr>
+
+    <h4>
+        Book Details
+    </h4>
+
+    <div class="form-group">
+
+        <label>
+            ISBN
+        </label>
+
+        <input type="text"
+               name="bookDetails.isbn"
+               value="<c:out value='${book.bookDetails.isbn}'/>"
+               class="form-control"
+               required>
+
     </div>
 
     <div class="form-group">
-        <label>Number of Pages:</label>
-        <input type="number" name="numberOfPages" class="form-control" />
+
+        <label>
+            Publisher
+        </label>
+
+        <input type="text"
+               name="bookDetails.publisher"
+               value="<c:out value='${book.bookDetails.publisher}'/>"
+               class="form-control">
+
     </div>
 
     <div class="form-group">
-        <label>Language:</label>
-        <input type="text" name="language" class="form-control" />
+
+        <label>
+            Number Of Pages
+        </label>
+
+        <input type="number"
+               name="bookDetails.numberOfPages"
+               value="${book.bookDetails.numberOfPages}"
+               class="form-control"
+               min="1">
+
     </div>
 
-    <button type="submit" class="btn btn-success">Save Book</button>
-    <a href="${pageContext.request.contextPath}/books/list" class="btn btn-secondary">Cancel</a>
+    <div class="form-group">
+
+        <label>
+            Language
+        </label>
+
+        <input type="text"
+               name="bookDetails.language"
+               value="<c:out value='${book.bookDetails.language}'/>"
+               class="form-control">
+
+    </div>
+
+    <button type="submit"
+            class="btn btn-primary">
+
+        Save Book
+
+    </button>
+
+    <a href="${listUrl}"
+       class="btn btn-secondary">
+
+        Cancel
+
+    </a>
+
 </form>
 
 </body>
